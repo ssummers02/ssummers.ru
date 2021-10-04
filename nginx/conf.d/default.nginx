@@ -1,0 +1,8 @@
+server {
+    listen 80;
+
+    server_name ssummers.ru;
+
+    root /var/www/ssummers.ru;
+    index index.html;
+}
