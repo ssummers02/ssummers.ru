@@ -1,25 +1,24 @@
 version: '3.7'
 
 services:
-  nginx:
-    image: nginx
+  web:
+    container_name: nginx
+    image: nginx:latest
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/conf.d/default.nginx:/etc/nginx/conf.d/default.conf
       - ./html/:/var/www/ssummers.ru
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    restart: unless-stopped
-    # Перезапустит контейнер в непредвиденных ситуациях
-    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
-    # Перезапустит nginx контейнер каждые 6 часов и подгрузит новые сертификаты, если есть
+      - ./certbot/conf:/etc/nginx/ssl
+      - ./certbot/data:/var/www/certbot
+    restart: always
+
   certbot:
     container_name: certbot
-    image: certbot/certbot
+    image: certbot/certbot:latest
+    command: certonly --webroot --webroot-path=/var/www/certbot --email kim-nikita202@mail.ru --agree-tos --no-eff-email -d ssummers.ru -d www.ssummers.ru
     volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    restart: unless-stopped
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    # Проверяет каждые 12 часов, нужны ли новые сертификаты
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/logs:/var/log/letsencrypt
+      - ./certbot/data:/var/www/certbot
