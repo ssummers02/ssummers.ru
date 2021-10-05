@@ -7,6 +7,8 @@ server {
         root /var/www/certbot;
     }
 
+    root /var/www/ssummers.ru;
+    index index.html;
     location / {
         return 301 https://$host$request_uri;
     }
@@ -21,7 +23,8 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/example.org/privkey.pem;
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-
+    root /var/www/ssummers.ru;
+    index index.html;
     location / {
         proxy_pass  http://ssummers.ru;
         proxy_set_header    Host                $http_host;
